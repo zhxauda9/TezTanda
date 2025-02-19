@@ -1,4 +1,4 @@
-module github.com/Temutjin2k/CarTrading
+module TezTanda
 
 go 1.23.4
 

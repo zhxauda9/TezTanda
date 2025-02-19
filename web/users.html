@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #98ac99; /* Светло-зеленый фон */
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 128, 0, 0.2); /* Зеленоватая тень */
+        }
+
+        h1 {
+            color: #2e7d32; /* Темно-зеленый */
+        }
+
+        h2 {
+            color: #388e3c; /* Зеленый */
+            margin-bottom: 15px;
+        }
+
+        .form-section {
+            background-color: #f1f8e9; /* Светло-зеленый */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4caf50;
+        }
+
+        .table-responsive {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .editable {
+            cursor: pointer;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .editable:hover {
+            background: #e2e6ea;
+        }
+
+        .btn-success {
+            background-color: #4caf50;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #388e3c;
+        }
+
+        .btn-warning {
+            background-color: #ffeb3b;
+            border: none;
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background-color: #fbc02d;
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+
+        .thead-dark {
+            background-color: #2e7d32; /* Темно-зеленый */
+            color: white;
+        }
+
+        th, td {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container my-5">
+    <header class="text-center">
+        <h1 class="display-4">TezTanda Management</h1>
+        <p class="lead">Manage your users effortlessly</p>
+    </header>
+
+    <!-- Add New User -->
+    <section class="form-section">
+        <h2>Add New User</h2>
+        <form id="add-user-form">
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="user-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Surname:</label>
+                <input type="text" id="user-surname" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="user-email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="user-pass" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Role:</label>
+                <input type="text" id="user-role" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add User</button>
+        </form>
+    </section>
+
+    <!-- Users Table -->
+    <section>
+        <h2>Users</h2>
+        <div class="table-responsive">
+            <table class="table table-hover text-center">
+                <thead class="thead-dark">
+                <tr>
+                    <th style="background-color: #2e7d32">ID</th>
+                    <th style="background-color: #2e7d32">Name</th>
+                    <th style="background-color: #2e7d32">Surname</th>
+                    <th style="background-color: #2e7d32">Email</th>
+                    <th style="background-color: #2e7d32">Password</th>
+                    <th style="background-color: #2e7d32">Role</th>
+                    <th style="background-color: #2e7d32">CreatedAt</th>
+                    <th style="background-color: #2e7d32">UpdatedAt</th>
+                    <th style="background-color: #2e7d32">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="users-table"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    const BASE_URL = 'http://localhost:8080'; // Backend server URL
+
+    async function loadUsers() {
+        try {
+            const response = await fetch(`${BASE_URL}/users`);
+            const users = await response.json();
+            const table = document.getElementById('users-table');
+            table.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td contenteditable="true" class="editable" data-field="name">${user.name}</td>
+                        <td contenteditable="true" class="editable" data-field="surname">${user.surname}</td>
+                        <td contenteditable="true" class="editable" data-field="email">${user.email}</td>
+                        <td contenteditable="true" class="editable" data-field="password">${user.password}</td>
+                        <td contenteditable="true" class="editable" data-field="role">${user.role}</td>
+                        <td>${user.created_at}</td>
+                        <td>${user.updated_at}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="updateUser(this, '${user.id}')">Update</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}')">Delete</button>
+                        </td>
+                    `;
+                table.appendChild(row);
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Error loading users.");
+        }
+    }
+    loadUsers();
+
+    document.getElementById('add-user-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = {
+            name: document.getElementById('user-name').value,
+            surname: document.getElementById('user-surname').value,
+            email: document.getElementById('user-email').value,
+            password: document.getElementById('user-pass').value,
+            role: document.getElementById('user-role').value,
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add user.");
+            }
+            alert('User added successfully!');
+            loadUsers();
+        } catch (error) {
+            console.error(error);
+            alert("Error adding user.");
+        }
+    });
+
+    async function deleteUser(id) {
+        if (confirm("Are you sure you want to delete this user?")) {
+            await fetch(`${BASE_URL}/users/${id}`, { method: 'DELETE' });
+            alert('User deleted successfully!');
+            loadUsers();
+        }
+    }
+
+    async function updateUser(button, id) {
+        const row = button.closest('tr');
+        const updatedUser = {
+            name: row.cells[1].innerText.trim(),
+            surname: row.cells[2].innerText.trim(),
+            email: row.cells[3].innerText.trim(),
+            password: row.cells[4].innerText.trim(),
+            role: row.cells[5].innerText.trim(),
+        };
+
+        try {
+            await fetch(`${BASE_URL}/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedUser),
+            });
+            alert('User updated successfully!');
+            loadUsers();
+        } catch (error) {
+            console.error(error);
+            alert("Error updating user.");
+        }
+    }
+</script>
+</body>
+
+</html>
