@@ -3,7 +3,10 @@ package dal
 import (
 	"context"
 	"errors"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
+	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -32,6 +35,9 @@ func (r *UserRepo) Add(user User) (primitive.ObjectID, error) {
 
 	if user.Name == "" || user.Email == "" {
 		return primitive.NilObjectID, errors.New("name and email cannot be empty")
+	}
+	if user.Role == "" {
+		user.Role = "user"
 	}
 	user.ID = primitive.NewObjectID() // Generate a new ObjectID for the user.
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -94,6 +100,53 @@ func (r *UserRepo) GetUser(id primitive.ObjectID) (User, error) {
 
 	var user User
 	err := r.userCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) GetUserByEmail(email string) (User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user User
+	err := r.userCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) GetUserFromToken(tokenString string) (User, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signing method")
+		}
+		return []byte(os.Getenv("SECRET")), nil
+	})
+	if err != nil || !token.Valid {
+		log.Println("Invalid token: ", err)
+		return User{}, errors.New("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		log.Println("Invalid token claims")
+		return User{}, errors.New("invalid token claims")
+	}
+
+	log.Println("Claims in token:", claims) // ЛОГ ДЛЯ ПРОВЕРКИ
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		log.Println("missing user_id in token")
+		return User{}, errors.New("missing user_id in token")
+	}
+	id, err := primitive.ObjectIDFromHex(userID)
+
+	user, err := r.GetUser(id)
 	if err != nil {
 		return User{}, err
 	}

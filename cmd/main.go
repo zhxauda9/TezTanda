@@ -44,11 +44,15 @@ func main() {
 
 	user_repo := dal.NewUserRepo(db)
 	user_handler := handler.NewUserHandler(user_repo)
+	auth_handler := handler.NewAuthHandler(user_repo)
 
 	mux.HandleFunc("/", ServePage)
 	mux.HandleFunc("POST /users", user_handler.AddNewUser)
+	mux.HandleFunc("POST /login", auth_handler.Login)
+	mux.HandleFunc("POST /logout", auth_handler.Logout)
 	mux.HandleFunc("GET /users", user_handler.GetUsers)
 	mux.HandleFunc("GET /users/{id}", user_handler.GetUser)
+	mux.HandleFunc("GET /profile", auth_handler.GetProfile)
 	mux.HandleFunc("PUT /users/{id}", user_handler.UpdateUser)
 	mux.HandleFunc("DELETE /users/{id}", user_handler.DeleteUser)
 
@@ -66,5 +70,5 @@ func main() {
 }
 
 func ServePage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/index.html")
+	http.ServeFile(w, r, "web/admin.html")
 }

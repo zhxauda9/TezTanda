@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            /*background-image: url('/static/pictures/background/profile.jpg');*/
+            font-family: 'Arial', sans-serif;
+        }
+
+        .profile-container {
+            margin-top: 80px;
+        }
+
+        .profile-header {
+            background: linear-gradient(to right, #c8b39c, #9e7e67);
+            color: #fff;
+            border-radius: 20px 20px 0 0;
+            padding: 30px;
+        }
+
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            background-color: #fff8ee;
+            border-radius: 0 0 20px 20px;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: #9e7e67;
+            border-color: #9e7e67;
+        }
+
+        .btn-primary:hover {
+            background-color: #7f634f;
+            border-color: #7f634f;
+        }
+
+        h1, p {
+            margin-bottom: 10px;
+        }
+
+        h6 {
+            color: #7f634f;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <main class="profile-container">
+        <div class="container d-flex justify-content-center" style="margin-top: 120px; margin-bottom: 80px;">
+            <div class="card shadow-lg" style="width: 100%; max-width: 700px; border: none; border-radius: 20px;">
+                <div class="profile-header text-center p-5"
+                    style="background: linear-gradient(to right, #d2b48c, #8b5e3c); color: white; border-radius: 20px 20px 0 0;">
+                    <h2 id="profileName" class="mb-2">Your Name</h2>
+                    <p id="just" class="mb-0" style="font-size: 1rem;">Our honoured guest</p>
+                </div>
+                <div class="card-body text-center px-4 py-5"
+                    style="background-color: #f5f5dc; border-radius: 0 0 20px 20px;">
+                    <h6 class="text-muted mb-4" style="font-size: 1rem;">User Information</h6>
+                    <p id="profileRole" style="font-size: 1.2rem; margin-bottom: 10px;">Our honoured guest</p>
+                    <p id="profileEmail" style="font-size: 1rem; color: #555;">Email: user@example.com</p>
+                    <button class="btn btn-outline-dark btn-sm px-4" data-toggle="modal" data-target="#editProfileModal"
+                        style="margin-top: 10px;">Edit Profile</button>
+                    <button class="btn btn-outline-danger btn-sm px-4 mt-2" onclick="logout()">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    </main>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="form-group">
+                            <label for="editName">Name</label>
+                            <input type="text" class="form-control" id="editName">
+                        </div>
+                        <div class="form-group">
+                            <label for="editSurname">Surname</label>
+                            <input type="text" class="form-control" id="editSurname">
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">Email</label>
+                            <input type="email" class="form-control" id="editEmail">
+                        </div>
+                        <div class="form-group">
+                            <label for="editPassword">Password</label>
+                            <input type="password" class="form-control" id="editPassword">
+                        </div>
+                        <div class="form-group">
+                            <label for="editRole">Role</label>
+                            <input type="text" class="form-control" id="editRole">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        let userId = null; // Переменная для хранения ID пользователя
+
+        async function fetchProfile() {
+            try {
+                const response = await fetch('/profile', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch profile data');
+
+                const userData = await response.json();
+                userId = userData.id; // Сохраняем ID пользователя
+
+                document.getElementById('profileName').textContent = userData.name || 'Your Name';
+                document.getElementById('profileEmail').textContent = `Email: ${userData.email || 'user@example.com'}`;
+                document.getElementById('profileRole').textContent = userData.role || 'Our honoured guest';
+
+                document.getElementById('editName').value = userData.name;
+                document.getElementById('editSurname').value = userData.surname;
+                document.getElementById('editRole').value = userData.role;
+                document.getElementById('editEmail').value = userData.email;
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function saveProfile() {
+            if (!userId) {
+                console.error('User ID is missing');
+                return;
+            }
+
+            const updatedUser = {
+                name: document.getElementById('editName').value,
+                surname: document.getElementById('editSurname').value,
+                email: document.getElementById('editEmail').value,
+                password: document.getElementById('editPassword').value,
+                role: document.getElementById('editRole').value,
+            };
+
+            try {
+                const response = await fetch(`/users/${userId}`, { // Теперь отправляем запрос на /profile/{id}
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedUser)
+                });
+
+                if (!response.ok) throw new Error('Failed to update profile');
+
+                fetchProfile();
+
+                $('#editProfileModal').modal('hide');
+                alert('User updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        }
+        async function logout() {
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) throw new Error('Failed to logout from profile');
+
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        window.onload = fetchProfile;
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
