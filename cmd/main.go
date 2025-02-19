@@ -37,9 +37,12 @@ func main() {
 
 	fs := http.FileServer(http.Dir("./web"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	fsUploads := http.FileServer(http.Dir("./uploads"))
+	mux.Handle("/uploads/", http.StripPrefix("/uploads/", fsUploads))
 
-	user_collection := client.Database("TezTanda")
-	user_repo := dal.NewUserRepo(user_collection)
+	db := client.Database("TezTanda")
+
+	user_repo := dal.NewUserRepo(db)
 	user_handler := handler.NewUserHandler(user_repo)
 
 	mux.HandleFunc("/", ServePage)
@@ -48,6 +51,15 @@ func main() {
 	mux.HandleFunc("GET /users/{id}", user_handler.GetUser)
 	mux.HandleFunc("PUT /users/{id}", user_handler.UpdateUser)
 	mux.HandleFunc("DELETE /users/{id}", user_handler.DeleteUser)
+
+	product_repo := dal.NewProductRepo(db)
+	product_handler := handler.NewProductHandler(product_repo)
+
+	mux.HandleFunc("POST /products", product_handler.AddProduct)
+	mux.HandleFunc("GET /products", product_handler.GetProducts)
+	mux.HandleFunc("GET /products/{id}", product_handler.GetProduct)
+	mux.HandleFunc("PUT /products/{id}", product_handler.UpdateProduct)
+	mux.HandleFunc("DELETE /products/{id}", product_handler.DeleteProduct)
 
 	log.Println("Server started on address: http://localhost:8080")
 	http.ListenAndServe(":8080", mux)

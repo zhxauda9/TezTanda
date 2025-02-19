@@ -120,7 +120,6 @@ func (r *UserRepo) GetUsers() ([]User, error) {
 	return users, nil
 }
 
-// Delete removes a user by its ID.
 func (r *UserRepo) Delete(id primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
