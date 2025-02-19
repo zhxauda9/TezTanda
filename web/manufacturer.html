@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturer Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: darkslategray;
+            margin-top: 20px;
+        }
+
+        header {
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+
+        section {
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            background-color: #e9ecef;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .table {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-5">
+        <header class="text-center" style="color: white;">
+            <h1 class="display-4">Manufacturer Management</h1>
+            <p class="lead">Manage your manufacturers effortlessly</p>
+        </header>
+
+        <!-- Add New Manufacturer -->
+        <section id="add-manufacturer" class="form-section my-4 p-3 rounded">
+            <h2>Add New Manufacturer</h2>
+            <form id="add-manufacturer-form">
+                <div class="form-group">
+                    <label for="manufacturer-name">Name:</label>
+                    <input type="text" id="manufacturer-name" class="form-control" placeholder="Enter manufacturer name"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="manufacturer-country">Country:</label>
+                    <input type="text" id="manufacturer-country" class="form-control" placeholder="Enter country"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="foundation-year">Foundation Year:</label>
+                    <input type="number" id="foundation-year" class="form-control" placeholder="Enter foundation year"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="website">Website:</label>
+                    <input type="url" id="website" class="form-control" placeholder="Enter website URL">
+                </div>
+                <button type="submit" class="btn btn-success">Add Manufacturer</button>
+            </form>
+        </section>
+
+        <!-- Search Manufacturer by ID -->
+        <section id="search-manufacturer" class="form-section my-4 p-3 rounded">
+            <h2>Search Manufacturer by ID</h2>
+            <form id="search-manufacturer-form">
+                <div class="form-group">
+                    <label for="search-manufacturer-id">Manufacturer ID:</label>
+                    <input type="text" id="search-manufacturer-id" class="form-control"
+                        placeholder="Enter manufacturer ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <div id="search-result" class="mt-4"></div>
+        </section>
+
+        <!-- Manufacturers Table -->
+        <section id="manufacturers" class="my-4 p-4 rounded">
+            <h2>Manufacturers</h2>
+            <table class="table table-hover text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th>Foundation Year</th>
+                        <th>Website</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="manufacturers-table">
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080'; // Backend server URL
+
+        async function loadManufacturers() {
+            try {
+                const response = await fetch(`${BASE_URL}/manufacturers`);
+                const manufacturers = await response.json();
+                if (!manufacturers) {
+                    return
+                }
+
+                const table = document.getElementById('manufacturers-table');
+                table.innerHTML = '';
+                manufacturers.forEach(manufacturer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${manufacturer.id}</td>
+                        <td>${manufacturer.name}</td>
+                        <td>${manufacturer.country}</td>
+                        <td>${manufacturer.foundation_year}</td>
+                        <td>${manufacturer.website || ''}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="updateManufacturer('${manufacturer.id}')">Update</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteManufacturer('${manufacturer.id}')">Delete</button>
+                        </td>
+                    `;
+                    table.appendChild(row);
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Error loading manufacturers.");
+            }
+        }
+        loadManufacturers();
+
+        document.getElementById('add-manufacturer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const manufacturer = {
+                name: document.getElementById('manufacturer-name').value,
+                country: document.getElementById('manufacturer-country').value,
+                foundation_year: parseInt(document.getElementById('foundation-year').value, 10),
+                website: document.getElementById('website').value
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/manufacturers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(manufacturer),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to add manufacturer.");
+                }
+
+                loadManufacturers();
+            } catch (error) {
+                console.error(error);
+                alert("Error adding manufacturer.");
+            }
+        });
+
+        async function deleteManufacturer(id) {
+            if (confirm("Are you sure you want to delete this manufacturer?")) {
+                await fetch(`${BASE_URL}/manufacturers/${id}`, { method: 'DELETE' });
+                loadManufacturers();
+            }
+        }
+
+        async function updateManufacturer(id) {
+            console.log(id)
+            const name = prompt('Enter new name:');
+            const country = prompt('Enter new country:');
+            const foundation_year = parseInt(prompt('Enter new foundation year:'), 10);
+            const website = prompt('Enter new website URL:');
+
+            if (!name || !country || !foundation_year) return;
+
+            await fetch(`${BASE_URL}/manufacturers/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, country, foundation_year, website }),
+            });
+        }
+
+        document.getElementById('search-manufacturer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const manufacturerId = document.getElementById('search-manufacturer-id').value;
+            const resultDiv = document.getElementById('search-result');
+            resultDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${BASE_URL}/manufacturers/${manufacturerId}`);
+                if (!response.ok) throw new Error('Manufacturer not found.');
+                const manufacturer = await response.json();
+
+                resultDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <p><strong>ID:</strong> ${manufacturer.id}</p>
+                    <p><strong>Name:</strong> ${manufacturer.name}</p>
+                    <p><strong>Country:</strong> ${manufacturer.country}</p>
+                    <p><strong>Foundation Year:</strong> ${manufacturer.foundation_year}</p>
+                    <p><strong>Website:</strong> ${manufacturer.website || ''}</p>
+                </div>
+            `;
+            } catch (error) {
+                console.error(error);
+                resultDiv.innerHTML = `
+                <div class="alert alert-danger">Error: Manufacturer not found.</div>
+            `;
+            }
+        });
+    </script>
+</body>
+
+</html>
