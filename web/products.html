@@ -164,13 +164,13 @@
             const products = await response.json();
             const table = document.getElementById('products-table');
             table.innerHTML = '';
+            if(products.length!=0){
+                products.forEach(product => {
+                    let imagePath = product.image.replace(/\\/g, '/');
+                    imagePath = imagePath.replace(/^\/?uploads\//, '/uploads/');
 
-            products.forEach(product => {
-                let imagePath = product.image.replace(/\\/g, '/');
-                imagePath = imagePath.replace(/^\/?uploads\//, '/uploads/');
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                     <td>${product.id}</td>
                     <td contenteditable="true" class="editable" data-field="name">${product.name}</td>
                     <td contenteditable="true" class="editable" data-field="description">${product.description}</td>
@@ -183,14 +183,15 @@
                         <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.id}')">Delete</button>
                     </td>
                 `;
-                table.appendChild(row);
-            });
+                    table.appendChild(row);
+                });
+            }
         } catch (error) {
             console.error('Error loading products:', error);
-            alert("Error loading users.");
+            alert("Error loading products.");
         }
     }
-    loadProducts()
+    loadProducts();
 
     document.getElementById('add-product-form').addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -224,7 +225,6 @@
     async function updateProduct(button, productId) {
         const row = button.closest('tr');
 
-        // Create FormData to send as multipart/form-data
         let formData = new FormData();
         formData.append("name", row.children[1].innerText);
         formData.append("description", row.children[2].innerText);
@@ -232,8 +232,7 @@
         formData.append("price", row.children[4].innerText);
         formData.append("stock", row.children[5].innerText);
 
-        // If an image input is available, append it (optional)
-        const imageInput = document.getElementById("product-image"); // Assuming an image input exists for update
+        const imageInput = document.getElementById("product-image");
         if (imageInput && imageInput.files.length > 0) {
             formData.append("image", imageInput.files[0]);
         }

@@ -47,11 +47,50 @@ func UploadToTripleS(fileData []byte, fileName string) (string, error) {
 }
 
 func DeleteFromTripleS(fileName string) error {
-	filePath := filepath.Join("uploads", fileName)
-	err := os.Remove(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to delete file: %v", err)
+	filePath := filepath.Join(fileName)
+
+	if err := os.Remove(filePath); err != nil {
+		fmt.Printf("Warning: failed to delete file: %v\n", err) // Просто предупреждаем, но продолжаем
 	}
+	if err := RemoveFileInfo(fileName); err != nil {
+		return fmt.Errorf("failed to remove file info: %v", err)
+	}
+
+	return nil
+}
+
+func RemoveFileInfo(fileName string) error {
+	tempFile := storageFile
+	file, err := os.Open(storageFile)
+	if err != nil {
+		return fmt.Errorf("failed to open storage file: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read storage file: %v", err)
+	}
+
+	var updatedRecords [][]string
+	for _, record := range records {
+		if len(record) < 2 || record[1] != fileName {
+			updatedRecords = append(updatedRecords, record)
+		}
+	}
+
+	temp, err := os.Create(tempFile)
+	if err != nil {
+		return fmt.Errorf("failed to create temp storage file: %v", err)
+	}
+	defer temp.Close()
+
+	writer := csv.NewWriter(temp)
+	if err := writer.WriteAll(updatedRecords); err != nil {
+		return fmt.Errorf("failed to write to temp storage file: %v", err)
+	}
+	writer.Flush()
 
 	return nil
 }

@@ -206,6 +206,13 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid product ID", http.StatusBadRequest)
 		return
 	}
+	product, _ := h.productRepo.GetProduct(id)
+	err = DeleteFromTripleS(product.Image)
+	if err != nil {
+		log.Println("Error deleting product image: ", err)
+		http.Error(w, "Error deleting product image", http.StatusBadRequest)
+		return
+	}
 
 	err = h.productRepo.Delete(id)
 	if err != nil {
