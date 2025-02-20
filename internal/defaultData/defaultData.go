@@ -69,7 +69,7 @@ func Fill(client *mongo.Database) {
 		{ID: primitive.NewObjectID(), Name: "Potatoes", Description: "Young potatoes, 1kg", Category: "Vegetables", Price: 389, Stock: 100, Image: "uploads/potatoes.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Carrots", Description: "Organic carrots, 1kg", Category: "Vegetables", Price: 180, Stock: 70, Image: "uploads/carrots.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Onions", Description: "Fresh onions, 1kg", Category: "Vegetables", Price: 120, Stock: 80, Image: "uploads/onions.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
-		{ID: primitive.NewObjectID(), Name: "Garlics", Description: "Fresh garlics, 1kg", Category: "Vegetables", Price: 1190, Stock: 80, Image: "uploads/garlics.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Garlics", Description: "Fresh garlics, 1kg", Category: "Vegetables", Price: 1190, Stock: 80, Image: "uploads/garlic.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Cucumbers", Description: "Fresh cucumbers, 1kg", Category: "Vegetables", Price: 1290, Stock: 80, Image: "uploads/cucumbers.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Ginger", Description: "Fresh ginger, 1kg", Category: "Vegetables", Price: 1890, Stock: 80, Image: "uploads/ginger.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Pepper", Description: "Fresh pepper, 1kg", Category: "Vegetables", Price: 1490, Stock: 80, Image: "uploads/pepper.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
