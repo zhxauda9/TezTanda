@@ -1,6 +1,7 @@
 package main
 
 import (
+	"TezTanda/internal/defaultData"
 	"context"
 	"log"
 	"net/http"
@@ -41,6 +42,7 @@ func main() {
 	mux.Handle("/uploads/", http.StripPrefix("/uploads/", fsUploads))
 
 	db := client.Database("TezTanda")
+	defaultData.Fill(db)
 
 	user_repo := dal.NewUserRepo(db)
 	user_handler := handler.NewUserHandler(user_repo)
