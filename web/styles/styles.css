@@ -1,0 +1,25 @@
+.category-card {
+    background-color: #28a745; /* Зеленый цвет */
+    color: white;
+    padding: 15px 20px;
+    border-radius: 20px; /* Закругленные углы */
+    text-align: center;
+    font-weight: bold;
+    min-width: 140px; /* Минимальная ширина */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+body {
+    background-color: #f8f9fa;
+    padding-top: 70px;
+}
+.card {
+    border-radius: 10px;
+}
