@@ -73,24 +73,20 @@ func main() {
 }
 
 func ServePage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/admin.html")
+	// Если путь пустой ("/"), перенаправляем на home.html
+	if r.URL.Path == "/" {
+		http.ServeFile(w, r, "web/home.html")
+		return
+	}
+
+	// Формируем путь к файлу
+	filePath := "web" + r.URL.Path
+	_, err := os.Stat(filePath)
+
+	// Если файл существует, отдаем его, иначе 404
+	if err == nil {
+		http.ServeFile(w, r, filePath)
+	} else {
+		http.NotFound(w, r)
+	}
 }
-
-// func ServePage(w http.ResponseWriter, r *http.Request) {
-// 	// Если путь пустой ("/"), перенаправляем на home.html
-// 	if r.URL.Path == "/" {
-// 		http.ServeFile(w, r, "web/home.html")
-// 		return
-// 	}
-
-// 	// Формируем путь к файлу
-// 	filePath := "web" + r.URL.Path
-// 	_, err := os.Stat(filePath)
-
-// 	// Если файл существует, отдаем его, иначе 404
-// 	if err == nil {
-// 		http.ServeFile(w, r, filePath)
-// 	} else {
-// 		http.NotFound(w, r)
-// 	}
-// }
