@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #98ac99; /* Светло-зеленый фон */
+    margin-top: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 128, 0, 0.2); /* Зеленоватая тень */
+}
+
+h1 {
+    color: #2e7d32; /* Темно-зеленый */
+}
+
+h2 {
+    color: #388e3c; /* Зеленый */
+    margin-bottom: 15px;
+}
+
+.form-section {
+    background-color: #f1f8e9; /* Светло-зеленый */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 5px solid #4caf50;
+}
+
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.editable {
+    cursor: pointer;
+    background: #f8f9fa;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.editable:hover {
+    background: #e2e6ea;
+}
+
+.btn-success {
+    background-color: #4caf50;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #388e3c;
+}
+
+.btn-warning {
+    background-color: #ffeb3b;
+    border: none;
+    color: black;
+}
+
+.btn-warning:hover {
+    background-color: #fbc02d;
+}
+
+.btn-danger {
+    background-color: #d32f2f;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #b71c1c;
+}
+
+.thead-dark {
+    background-color: #2e7d32; /* Темно-зеленый */
+    color: white;
+}
+
+th, td {
+    text-align: center;
+}
