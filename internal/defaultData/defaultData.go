@@ -76,7 +76,7 @@ func Fill(client *mongo.Database) {
 		{ID: primitive.NewObjectID(), Name: "Kiwi", Description: "Kiwi 1kg", Category: "Fruits", Price: 990, Stock: 75, Image: "uploads/kiwis.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Avocado", Description: "Fresh avocado, 1kg", Category: "Fruits", Price: 1080, Stock: 200, Image: "uploads/avocado.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 
-		// Vegetables 16
+		// Vegetables 14
 		{ID: primitive.NewObjectID(), Name: "Tomatoes", Description: "Fresh red tomatoes, 1kg", Category: "Vegetables", Price: 990, Stock: 80, Image: "uploads/tomatoes.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Potatoes", Description: "Young potatoes, 1kg", Category: "Vegetables", Price: 389, Stock: 100, Image: "uploads/potatoes.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Carrots", Description: "Organic carrots, 1kg", Category: "Vegetables", Price: 180, Stock: 70, Image: "uploads/carrots.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
@@ -91,6 +91,10 @@ func Fill(client *mongo.Database) {
 		{ID: primitive.NewObjectID(), Name: "Beetroot", Description: "Beetroot, weight, Kazakhstan", Category: "Vegetables", Price: 117, Stock: 200, Image: "uploads/beetroot.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Beijin Cabbage", Description: "Peking cabbage mini, weight, Kazakhstan", Category: "Vegetables", Price: 998, Stock: 200, Image: "uploads/peking.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Cauliflower", Description: "Cauliflower, weight", Category: "Vegetables", Price: 1320, Stock: 200, Image: "uploads/caulifllower.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Eggplant", Description: "Eggplant NAC-AGRO, weight, Kazakhstan", Category: "Vegetables", Price: 840, Stock: 200, Image: "uploads/eggplant.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Daikon", Description: "Daikon radish, weight", Category: "Vegetables", Price: 324, Stock: 200, Image: "uploads/daikon.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Mushrooms", Description: "Oyster mushrooms, weight, Kazakhstan", Category: "Vegetables", Price: 1260, Stock: 200, Image: "uploads/mushrooms.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Leek", Description: "Fresh leek, 1000 g, Kazakhstan", Category: "Vegetables", Price: 2400, Stock: 200, Image: "uploads/leek.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 
 		// Meat 16
 		{ID: primitive.NewObjectID(), Name: "Chicken thighs", Description: "Boneless skinless chicken thighs, 1kg", Category: "Meat", Price: 1860, Stock: 40, Image: "uploads/chicken_thighs.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
@@ -149,6 +153,7 @@ func Fill(client *mongo.Database) {
 		{ID: primitive.NewObjectID(), Name: "Pirozhki", Description: "Fried liver pies galmart, in, Kazakhstan", Category: "Bakery", Price: 190, Stock: 200, Image: "uploads/pirozhki2.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Chuck-chuck", Description: "Chuck-Chuck Tatar galmart, weight, Kazakhstan", Category: "Bakery", Price: 400, Stock: 200, Image: "uploads/chuckchuck.jpeg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		{ID: primitive.NewObjectID(), Name: "Sandwich", Description: "Croissant sandwich with sausage 1/150 galmart, pcs, Kazakhstan", Category: "Bakery", Price: 1000, Stock: 200, Image: "uploads/sandwich.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: primitive.NewObjectID(), Name: "Loaf", Description: "Galmart Embassy loaf, pcs, Kazakhstan", Category: "Bakery", Price: 380, Stock: 200, Image: "uploads/loaf.jpg", CreatedAt: time.Now(), UpdatedAt: time.Now()},
 	}
 
 	for _, product := range products {
