@@ -37,8 +37,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	fs := http.FileServer(http.Dir("./web"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	fsStyles := http.FileServer(http.Dir("./web/styles"))
+	mux.Handle("/styles/", http.StripPrefix("/styles/", fsStyles))
+
 	fsUploads := http.FileServer(http.Dir("./uploads"))
 	mux.Handle("/uploads/", http.StripPrefix("/uploads/", fsUploads))
 
@@ -48,6 +49,12 @@ func main() {
 	user_repo := dal.NewUserRepo(db)
 	user_handler := handler.NewUserHandler(user_repo)
 	auth_handler := handler.NewAuthHandler(user_repo)
+	orderRepo := dal.NewOrderRepo(db)
+	orderHandler := handler.NewOrderHandler(orderRepo)
+
+	mux.HandleFunc("POST /orders", orderHandler.AddOrder)
+
+	
 
 	mux.HandleFunc("/", ServePage)
 	mux.HandleFunc("POST /users", user_handler.AddNewUser)

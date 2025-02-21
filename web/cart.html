@@ -200,37 +200,46 @@
             });
 
             checkoutButton.addEventListener("click", async () => {
-                const cart = getCart();
-                if (cart.length === 0) {
-                    alert("Your cart is empty!");
-                    return;
-                }
+    const cart = getCart();
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
 
-                const order = {
-                    items: cart,
-                    total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
-                    timestamp: new Date().toISOString()
-                };
+    const order = {
+        user_id: "65d643e8a3b5f2a5d1234567", // Фиксированный корректный ObjectID
+        items: cart.map(item => ({
+            product_id: item.id,
+            quantity: item.quantity,
+            price: parseFloat(item.price) || 0
+        })),
+        total: cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * item.quantity, 0),
+        timestamp: new Date().toISOString()
+    };
 
-                try {
-                    const response = await fetch("http://localhost:8080/orders", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(order)
-                    });
-
-                    if (response.ok) {
-                        sessionStorage.removeItem("cart");
-                        renderCart();
-                        alert("Order placed successfully!");
-                    } else {
-                        alert("Failed to place order.");
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("Error processing order.");
-                }
+    try {
+        const response = await fetch("http://localhost:8080/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(order)
         });
+
+        console.log("📩 Отправленный заказ:", order);
+
+        if (response.ok) {
+            sessionStorage.removeItem("cart");
+            renderCart();
+            alert("Order placed successfully!");
+        } else {
+            const errorMsg = await response.text();
+            console.error("❌ Server error:", errorMsg);
+            alert("Failed to place order. Server response: " + errorMsg);
+        }
+    } catch (error) {
+        console.error("❌ Error:", error);
+        alert("Error processing order.");
+    }
+});
 
     renderCart();
 });
