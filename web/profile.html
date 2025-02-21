@@ -34,13 +34,14 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link btn btn-outline-success" href="cart.html">My cart</a></li>
                     <li class="nav-item"><a class="nav-link btn btn-outline-success me-2" href="all_products.html">Products</a></li>
                     <li class="nav-item"><a class="nav-link btn btn-outline-success me-2" href="login.html">Account</a></li>
                     <li class="nav-item"><a class="nav-link btn btn-outline-success" href="about.html">About Us</a></li>
                 </ul>
             </div>
         </nav>
-    </header>
+   </header>
     <br>
     <br>
     <div class="container mt-5">
@@ -112,6 +113,17 @@
 
     <script>
         let userId = null;
+        async function fetchOrders(userId) {
+            try {
+                const response = await fetch(`/orders?userId=${userId}`, { credentials: 'include' });
+                if (!response.ok) throw new Error('Ошибка загрузки заказов');
+                
+                const orders = await response.json();
+                loadOrderHistory(orders);
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
 
         async function fetchProfile() {
             try {
@@ -136,6 +148,7 @@
                 document.getElementById('editRole').value = userData.role;
                 document.getElementById('editEmail').value = userData.email;
 
+                fetchOrders(userId);
                 loadOrderHistory(userData.orders || []);
             } catch (error) {
                 console.error('Ошибка:', error);
