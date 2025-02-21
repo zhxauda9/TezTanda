@@ -5,8 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет - TezTanda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .order-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .badge {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+    </style>
 </head>
 <body>
+    <header class="bg-white shadow-sm fixed-top">
+        <nav class="navbar navbar-expand-lg container">
+            <a class="navbar-brand fw-bold text-success" href="home.html">TezTanda</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link btn btn-outline-success me-2" href="all_products.html">Products</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-outline-success me-2" href="login.html">Account</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-outline-success" href="about.html">About Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <br>
+    <br>
     <div class="container mt-5">
         <h2 class="text-center text-success">Личный кабинет</h2>
 
@@ -27,9 +63,7 @@
                 </div>
                 <div class="col-md-6">
                     <h5>История заказов</h5>
-                    <ul class="list-group" id="orderHistory">
-                        <li class="list-group-item">Загрузка...</li>
-                    </ul>
+                    <div id="orderHistory" class="order-history"></div>
                 </div>
             </div>
 
@@ -40,7 +74,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно редактирования -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -104,7 +137,6 @@
                 document.getElementById('editEmail').value = userData.email;
 
                 loadOrderHistory(userData.orders || []);
-
             } catch (error) {
                 console.error('Ошибка:', error);
             }
@@ -163,14 +195,32 @@
             orderHistory.innerHTML = "";
 
             if (orders.length === 0) {
-                orderHistory.innerHTML = '<li class="list-group-item">Нет заказов</li>';
-            } else {
-                orders.forEach(order => {
-                    let li = document.createElement('li');
-                    li.classList.add('list-group-item');
-                    li.textContent = `Заказ #${order.id} – ${order.amount} ₸`;
-                    orderHistory.appendChild(li);
-                });
+                orderHistory.innerHTML = '<div class="alert alert-warning text-center">Нет заказов</div>';
+                return;
+            }
+
+            orders.forEach(order => {
+                let orderCard = document.createElement('div');
+                orderCard.classList.add('card', 'mb-3', 'shadow-sm');
+
+                orderCard.innerHTML = `
+                    <div class="card-body">
+                        <h6 class="card-title">Заказ #${order.id}</h6>
+                        <p class="card-text"><strong>Дата:</strong> ${new Date(order.date).toLocaleDateString()}</p>
+                        <p class="card-text"><strong>Сумма:</strong> ${order.amount} ₸</p>
+                        <span class="badge bg-${getStatusColor(order.status)}">${order.status}</span>
+                    </div>
+                `;
+                orderHistory.appendChild(orderCard);
+            });
+        }
+
+        function getStatusColor(status) {
+            switch (status.toLowerCase()) {
+                case 'в обработке': return 'warning';
+                case 'завершен': return 'success';
+                case 'отменен': return 'danger';
+                default: return 'secondary';
             }
         }
 
