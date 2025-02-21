@@ -3,6 +3,7 @@ package main
 import (
 	"TezTanda/internal/defaultData"
 	"context"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +17,7 @@ import (
 )
 
 func main() {
+	SetupLogger()
 	log.Println("Trying to load .env file...")
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
@@ -72,18 +74,32 @@ func main() {
 	http.ListenAndServe(":8080", mux)
 }
 
+func SetupLogger() {
+	logFileName := "server.log"
+
+	_ = os.Remove(logFileName)
+
+	logFile, err := os.Create(logFileName)
+	if err != nil {
+		log.Fatalf("Error to create log file: %v", err)
+	}
+	multiWriter := io.MultiWriter(os.Stdout, logFile)
+
+	log.SetOutput(multiWriter)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
+	log.Println("Logging is set up! The recording goes to the file and to the terminal.")
+}
+
 func ServePage(w http.ResponseWriter, r *http.Request) {
-	// Если путь пустой ("/"), перенаправляем на home.html
 	if r.URL.Path == "/" {
 		http.ServeFile(w, r, "web/home.html")
 		return
 	}
 
-	// Формируем путь к файлу
 	filePath := "web" + r.URL.Path
 	_, err := os.Stat(filePath)
 
-	// Если файл существует, отдаем его, иначе 404
 	if err == nil {
 		http.ServeFile(w, r, filePath)
 	} else {

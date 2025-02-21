@@ -1,0 +1,7 @@
+2025/02/21 11:45:14 main.go:91: Logging is set up! The recording goes to the file and to the terminal.
+2025/02/21 11:45:14 main.go:21: Trying to load .env file...
+2025/02/21 11:45:14 main.go:27: Trying to connect mongoDB...
+2025/02/21 11:45:14 main.go:38: Successfuly connected to MongoDB!
+2025/02/21 11:45:14 defaultData.go:38: User default data filled successfully!
+2025/02/21 11:45:14 defaultData.go:167: Product default data filled successfully!
+2025/02/21 11:45:14 main.go:73: Server started on address: http://localhost:8080
