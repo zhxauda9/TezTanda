@@ -4,12 +4,13 @@ import (
 	"TezTanda/internal/dal"
 	"encoding/json"
 	"fmt"
-	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthHandler struct {
@@ -71,17 +72,46 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	// Достаем куку с токеном
 	cookie, err := r.Cookie("Authorization")
 	if err != nil {
 		http.Error(w, "No token provided", http.StatusUnauthorized)
 		return
 	}
 	tokenString := cookie.Value
-	user, err := h.userRepo.GetUserFromToken(tokenString)
-	if err != nil {
-		http.Error(w, "Failed to get user data", http.StatusInternalServerError)
+
+	// Разбираем токен
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		http.Error(w, "Invalid token", http.StatusUnauthorized)
 		return
 	}
+
+	// Извлекаем claims
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+		return
+	}
+
+	// Получаем user_id из токена
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		http.Error(w, "Invalid user_id", http.StatusUnauthorized)
+		return
+	}
+
+	// Ищем пользователя в базе данных
+	user, err := h.userRepo.GetUserByID(userID)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Отправляем информацию о пользователе
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }

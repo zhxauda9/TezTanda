@@ -3,11 +3,12 @@ package dal
 import (
 	"context"
 	"errors"
-	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 	"time"
+
+	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -93,6 +94,25 @@ func (r *UserRepo) Update(id primitive.ObjectID, updatedUser User) error {
 	return nil
 }
 
+// ✅ Новый метод для поиска пользователя по ID.
+func (r *UserRepo) GetUserByID(userID string) (User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return User{}, errors.New("invalid user ID format")
+	}
+
+	var user User
+	err = r.userCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
 // GetUser retrieves a single user by its ID.
 func (r *UserRepo) GetUser(id primitive.ObjectID) (User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -120,6 +140,7 @@ func (r *UserRepo) GetUserByEmail(email string) (User, error) {
 	return user, nil
 }
 
+// ✅ Исправленный метод получения пользователя из токена.
 func (r *UserRepo) GetUserFromToken(tokenString string) (User, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -144,9 +165,8 @@ func (r *UserRepo) GetUserFromToken(tokenString string) (User, error) {
 		log.Println("missing user_id in token")
 		return User{}, errors.New("missing user_id in token")
 	}
-	id, err := primitive.ObjectIDFromHex(userID)
 
-	user, err := r.GetUser(id)
+	user, err := r.GetUserByID(userID) // Теперь используем `GetUserByID`
 	if err != nil {
 		return User{}, err
 	}
