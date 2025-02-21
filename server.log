@@ -1,7 +1,8 @@
-2025/02/21 11:45:14 main.go:91: Logging is set up! The recording goes to the file and to the terminal.
-2025/02/21 11:45:14 main.go:21: Trying to load .env file...
-2025/02/21 11:45:14 main.go:27: Trying to connect mongoDB...
-2025/02/21 11:45:14 main.go:38: Successfuly connected to MongoDB!
-2025/02/21 11:45:14 defaultData.go:38: User default data filled successfully!
-2025/02/21 11:45:14 defaultData.go:167: Product default data filled successfully!
-2025/02/21 11:45:14 main.go:73: Server started on address: http://localhost:8080
+2025/02/21 14:28:10 main.go:98: Logging is set up! The recording goes to the file and to the terminal.
+2025/02/21 14:28:10 main.go:21: Trying to load .env file...
+2025/02/21 14:28:10 main.go:27: Trying to connect mongoDB...
+2025/02/21 14:28:10 main.go:38: Successfuly connected to MongoDB!
+2025/02/21 14:28:10 defaultData.go:38: User default data filled successfully!
+2025/02/21 14:28:11 defaultData.go:167: Product default data filled successfully!
+2025/02/21 14:28:11 main.go:80: Server started on address: http://localhost:8080
+2025/02/21 14:28:24 auth_handler.go:53: Signing token with SECRET: 4Imp3xlavgXmbWCIXl9dCEomHW4LyGSBCXfuOrF
